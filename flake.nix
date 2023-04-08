@@ -9,6 +9,9 @@
     in
       {
         devShells.${system}.default = pkgs.mkShell rec {
+          packages = with pkgs; [
+            ghcid
+          ];
           buildInputs = with pkgs; [
             ghc
           ];
