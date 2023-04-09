@@ -69,11 +69,15 @@ notNull (Parser p) = Parser $ \input -> do
     then Nothing
     else Just (input', xs)
 
-jsonString :: Parser String
-jsonString = undefined
+-- NOTE no support for escaping
+stringLiteral :: Parser String
+stringLiteral = spanP (/= '"')
+
+jsonString :: Parser JsonValue
+jsonString = JsonString <$> (charP '"' *> stringLiteral <* charP '"')
   
 jsonValue :: Parser JsonValue
-jsonValue = jsonNull <|> jsonBool <|> jsonNumber
+jsonValue = jsonNull <|> jsonBool <|> jsonNumber <|> jsonString
 
 main :: IO ()
 main = undefined
