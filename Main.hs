@@ -1,5 +1,4 @@
 module Main where
-
 import Control.Applicative
 import Data.Char
 
@@ -10,7 +9,6 @@ data JsonValue = JsonNull
                | JsonArray [JsonValue]
                | JsonObject [(String, JsonValue)]
                deriving (Eq, Show)
-
 -- NOTE, TODO: no error handling 
 newtype Parser a = Parser
   { runParser :: String -> Maybe (String, a)
@@ -85,7 +83,6 @@ sepBy sep element = (:) <$> element <*> many (sep *> element) <|> pure []
 jsonArray :: Parser JsonValue
 jsonArray = JsonArray <$> (charP '[' *> ws *> elements  <* ws <* charP ']')
   where elements = sepBy (ws *> charP ',' <* ws) jsonValue
-
   
 jsonObject :: Parser JsonValue
 jsonObject = JsonObject <$> (charP '{' *> ws *> sepBy (ws *> charP ',' <* ws ) pair <* ws <* charP '}')
@@ -94,9 +91,9 @@ jsonObject = JsonObject <$> (charP '{' *> ws *> sepBy (ws *> charP ',' <* ws ) p
 jsonValue :: Parser JsonValue
 jsonValue = jsonNull <|> jsonBool <|> jsonNumber <|> jsonString <|> jsonArray <|> jsonObject
 
-parsePath :: FilePath -> Parser a -> IO (Maybe a)
-parsePath fileName parser = do
-  input <- readFile fileName
+parseFile :: FilePath -> Parser a -> IO (Maybe a)
+parseFile fileName parser = do 
+  input <- readFile fileName 
   return (snd <$> runParser parser input)
   
 main :: IO ()
